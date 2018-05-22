@@ -11,12 +11,12 @@ module IOTA
         @validator = @utils.validator || IOTA::Utils::InputValidator.new
       end
 
-      def send_command(command, &callback)
-        @broker.send(command, &callback)
+      def send_command(command)
+        @broker.send(command)
       end
 
-      def get_node_info(&callback)
-        send_command(@commands.get_node_info, &callback)
+      def get_node_info
+        send_command(@commands.get_node_info)
       end
     end
   end
