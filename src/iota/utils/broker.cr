@@ -31,7 +31,7 @@ module IOTA
           success = false
           data = "Invalid response"
         end
-        data
+        {success, data}
       end
 
       def prepare_response(result, command)
