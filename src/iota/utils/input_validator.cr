@@ -26,16 +26,16 @@ module IOTA
       end
 
       def is_hash?(input)
-        isTrytes(input, 81)
+        is_trytes?(input, 81)
       end
 
       def is_address?(input)
         if input.size == 90
-          if !is_trytes(input, 90)
+          if !is_trytes?(input, 90)
             return false
           end
         else
-          if !is_trytes(input, 81)
+          if !is_trytes?(input, 81)
             return false
           end
         end
@@ -43,14 +43,14 @@ module IOTA
       end
 
       def is_trytes?(input, length = "0,")
-        is_string?(input) && /^[9A-Z]{#{length}}$/.match(input.to_s)
+        is_string?(input) && /^[9A-Z]{#{length.to_s}}$/.match(input.to_s)
       end
 
-      def isArrayOfTrytes(trytesArray)
-        return false if !isArray(trytesArray)
+      def is_array_of_trytes?(trytes_array)
+        return false if !is_array?(trytes_array)
 
-        trytesArray.each do |tryte|
-          return false if !isTrytes(tryte, 2673)
+        trytes_array.each do |tryte|
+          return false if !is_trytes?(tryte, 2673)
         end
         true
       end
@@ -64,7 +64,7 @@ module IOTA
         true
       end
 
-      def is_array_of_attachedTrytes?(trytes)
+      def is_array_of_attached_trytes?(trytes)
         return false if !is_array(trytes)
 
         (0...trytes.size).step(1) do |i|
@@ -132,7 +132,8 @@ module IOTA
         match = get_inside.match(node)
         return false if match.nil? || match[2].nil?
 
-        uri_test.match?(strip_brackets.match(match[2])[1])
+        match_data =
+          uri_test.match(strip_brackets.match(match[2]).try &.[1] || "")
       end
     end
   end

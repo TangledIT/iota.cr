@@ -15,8 +15,7 @@ module IOTA
         context = OpenSSL::SSL::Context::Client.insecure
         headers = HTTP::Headers{"Content-Type"       => "application/json",
                                 "X-IOTA-API-Version" => "1"}
-        response = HTTP::Client.post(@provider, headers, command.to_s, tls: context)
-        data = JSON.parse(response.body)
+        response = HTTP::Client.post(@provider, headers, command.to_json, tls: context)
 
         success = true
         begin
@@ -25,7 +24,7 @@ module IOTA
             data = data["error"]
             success = false
           else
-            data = prepare_response(data, command[:command])
+            data = prepare_response(data, command["command"])
           end
         rescue JSON::ParseException
           success = false
