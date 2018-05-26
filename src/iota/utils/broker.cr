@@ -16,7 +16,6 @@ module IOTA
         headers = HTTP::Headers{"Content-Type"       => "application/json",
                                 "X-IOTA-API-Version" => "1"}
         response = HTTP::Client.post(@provider, headers, command.to_json, tls: context)
-
         success = true
         begin
           data = JSON.parse(response.body)

@@ -6,7 +6,7 @@ module IOTA
       end
 
       def is_value?(input)
-        input && input.is_a?(Integer)
+        input && input.is_a?(Int32)
       end
 
       def is_num?(input)

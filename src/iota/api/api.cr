@@ -129,7 +129,7 @@ module IOTA
       end
 
       def get_transactions_to_approve(depth, reference = nil)
-        if !@validator.isValue(depth)
+        if !@validator.is_value?(depth)
           return send_data(false, "Invalid inputs provided")
         end
         send_command(@commands.get_transactions_to_approve(depth, reference))
