@@ -4,11 +4,16 @@ require "json"
 
 module IOTA
   module Utils
-    class Broker
-      def initialize(provider = String.new, token = String.new, timeout = 120)
-        @provider = provider || ""
+    class MakeRequest
+      property :provider
+
+      def initialize(provider = String.new, token = String.new)
+        @provider = provider || "http://localhost:14265"
         @token = token || ""
-        @timeout = (timeout && timeout.to_i > 0) ? timeout : 0
+      end
+
+      def set_provider(provider = String.new)
+        @provider = provider || "http://localhost:14265"
       end
 
       def send(command)
@@ -23,7 +28,7 @@ module IOTA
             data = data["error"]
             success = false
           else
-            data = prepare_response(data, command["command"])
+            data = prepare_result(data, command["command"])
           end
         rescue JSON::ParseException
           success = false
@@ -32,7 +37,17 @@ module IOTA
         {success, data}
       end
 
-      def prepare_response(result, command)
+      # TODO : Write
+      def batched_send(command, keys, batch_size)
+
+      end
+
+      # TODO : Write
+      def sandbox_send(job)
+
+      end
+
+      def prepare_result(result, command)
         result_map = {
           "getNeighbors"       => "neighbors",
           "addNeighbors"       => "addedNeighbors",

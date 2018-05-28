@@ -1,6 +1,17 @@
 module IOTA
   module API
     class Commands
+
+      def attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
+        {
+          "command"            => "attachToTangle",
+          "trunkTransaction"   => trunk_transaction,
+          "branchTransaction"  => branch_transaction,
+          "minWeightMagnitude" => min_weight_magnitude,
+          "trytes"             => trytes,
+        }
+      end
+
       def find_transactions(search_values)
         command = {
           "command" => "findTransactions",
@@ -14,13 +25,6 @@ module IOTA
           "command"   => "getBalances",
           "addresses" => addresses,
           "threshold" => threshold,
-        }
-      end
-
-      def get_trytes(hashes)
-        {
-          "command" => "getTrytes",
-          "hashes"  => hashes,
         }
       end
 
@@ -65,13 +69,10 @@ module IOTA
         }.merge(reference.nil? ? {} of String => String : {"reference" => reference})
       end
 
-      def attach_to_tangle(trunkTransaction, branchTransaction, minWeightMagnitude, trytes)
+      def get_trytes(hashes)
         {
-          "command"            => "attachToTangle",
-          "trunkTransaction"   => trunkTransaction,
-          "branchTransaction"  => branchTransaction,
-          "minWeightMagnitude" => minWeightMagnitude,
-          "trytes"             => trytes,
+          "command" => "getTrytes",
+          "hashes"  => hashes,
         }
       end
 
@@ -93,10 +94,17 @@ module IOTA
         }
       end
 
-      def check_consistency(tails)
+      def check_consistency(hashes)
         {
           "command" => "checkConsistency",
-          "tails"   => tails,
+          "tails"   => hashes,
+        }
+      end
+
+      def were_addresses_spent_from(addresses)
+        {
+          "command" => "wereAddressesSpentFrom",
+          "addresses"   => addresses,
         }
       end
     end

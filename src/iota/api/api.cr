@@ -1,10 +1,10 @@
 module IOTA
   module API
     class Api
-      # include Wrappers
+      include Wrappers
 
-      def initialize(broker = IOTA::Utils::Broker::Class, sandbox = String.new)
-        @broker = broker || IOTA::Utils::Broker.new
+      def initialize(make_request = IOTA::Utils::MakeRequest::Class, sandbox = String.new)
+        @make_request = make_request || IOTA::Utils::MakeRequest.new
         @sandbox = sandbox || ""
         @commands = Commands.new
         @utils = IOTA::Utils::Utils.new
@@ -12,7 +12,35 @@ module IOTA
       end
 
       def send_command(command)
-        @broker.send(command)
+        commands_to_batch = ["findTransactions", "getBalances",
+                             "getInclusionStates", "getTrytes"]
+        command_keys = ["addresses", "bundles", "hashes", "tags",
+                        "transactions", "approvees"]
+
+        # TODO: Write batched sends
+
+        @make_request.send(command)
+      end
+
+      def attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
+        if !@validator.is_hash?(trunk_transaction)
+          return send_data(false, "You have provided an invalid hash as a trunk: #{trunk_transaction}")
+        end
+
+        if !@validator.is_hash?(branch_transaction)
+          return send_data(false, "You have provided an invalid hash as a branch: #{branchTransaction}")
+        end
+
+        if !@validator.is_value?(min_weight_magnitude)
+          return send_data(false, "Invalid inputs provided")
+        end
+
+        if !@validator.is_array_of_trytes(trytes)
+          return send_data(false, "Invalid Trytes provided")
+        end
+
+        command = @commands.attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
+        send_command(command)
       end
 
       def find_transactions(search_values)
@@ -84,13 +112,6 @@ module IOTA
         send_command(command)
       end
 
-      def get_trytes(hashes)
-        if !@validator.is_array_of_hashes?(hashes)
-          return send_data(false, "Invalid Trytes provided")
-        end
-        send_command(@commands.get_trytes(hashes))
-      end
-
       def get_inclusion_states(transactions, tips)
         if !@validator.is_array_of_hashes?(transactions)
           return send_data(false, "Invalid Trytes provided")
@@ -135,29 +156,11 @@ module IOTA
         send_command(@commands.get_transactions_to_approve(depth, reference))
       end
 
-      def attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
-        # Check if correct trunk
-        if !@validator.is_hash?(trunk_transaction)
-          return send_data(false, "You have provided an invalid hash as a trunk: #{trunk_transaction}")
-        end
-
-        # Check if correct branch
-        if !@validator.is_hash?(branch_transaction)
-          return send_data(false, "You have provided an invalid hash as a branch: #{branchTransaction}")
-        end
-
-        # Check if minweight is integer
-        if !@validator.is_value?(min_weight_magnitude)
-          return send_data(false, "Invalid inputs provided")
-        end
-
-        # Check if array of trytes
-        if !@validator.is_array_of_trytes(trytes)
+      def get_trytes(hashes)
+        if !@validator.is_array_of_hashes?(hashes)
           return send_data(false, "Invalid Trytes provided")
         end
-
-        command = @commands.attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
-        send_command(command)
+        send_command(@commands.get_trytes(hashes))
       end
 
       def interrupt_attaching_to_tangle

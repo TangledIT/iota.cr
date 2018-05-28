@@ -1,20 +1,22 @@
-require "./iota/*"
+require "./iota/version"
 require "./iota/utils/*"
-require "./iota/api/*"
+require "./iota/api/commands"
+require "./iota/api/wrappers"
+require "./iota/api/api"
 
 module IOTA
   class Client
-    getter :version, :host, :port, :provider, :sandbox, :token, :broker, :api, :utils, :validator, :multisig
+    getter :version, :host, :port, :provider, :sandbox, :token, :make_request, :api, :utils, :validator, :multisig
 
     @provider : String?
-    @validator : IOTA::Utils::InputValidator?
+    @valid : IOTA::Utils::InputValidator?
 
     def initialize(settings = {} of Symbol => String)
       set_settings(settings)
       @utils = IOTA::Utils::Utils.new
-      @validator = @utils.validator
-      @broker = IOTA::Utils::Broker.new(@provider, @token, @timeout)
-      @api = IOTA::API::Api.new(@broker, @sandbox)
+      @valid = @utils.validator
+      @make_request = IOTA::Utils::MakeRequest.new(@provider, @token)
+      @api = IOTA::API::Api.new(@make_request, @sandbox)
 
       # @multisig = IOTA::Multisig::Multisig.new(self)
     end
@@ -25,7 +27,6 @@ module IOTA
       @provider = settings[:provider]? || @host.to_s.gsub(/\/$/, "") + ":" + @port.to_s
       @sandbox = settings[:sandbox]? || ""
       @token = settings[:token]? || ""
-      @timeout = settings[:timeout]? ? settings[:timeout].to_i : 120
 
       if @sandbox
         @sandbox = @provider.to_s.gsub(/\/$/, "")

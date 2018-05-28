@@ -1,6 +1,6 @@
 module IOTA
   module Utils
-    module Ascii
+    module AsciiToTrytes
       TRYTE_VALUES = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
       def to_trytes(input)

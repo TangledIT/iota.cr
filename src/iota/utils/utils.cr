@@ -1,7 +1,7 @@
 module IOTA
   module Utils
     class Utils
-      include Ascii
+      include AsciiToTrytes
 
       getter :validator
 

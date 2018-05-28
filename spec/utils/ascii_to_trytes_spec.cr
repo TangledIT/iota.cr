@@ -1,6 +1,6 @@
 require "./../spec_helper"
 
-describe IOTA::Utils::Ascii do
+describe IOTA::Utils::AsciiToTrytes do
   it "should convert from trytes" do
     utils = IOTA::Utils::Utils.new
     tests = [
