@@ -1,4 +1,7 @@
 require "./iota/version"
+require "./iota/crypto/*"
+require "./iota/crypto/converter/*"
+require "./iota/crypto/helpers/*"
 require "./iota/utils/*"
 require "./iota/api/commands"
 require "./iota/api/wrappers"
