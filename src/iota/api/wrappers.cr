@@ -39,7 +39,7 @@ module IOTA
           return send_data(nil, tail)
         end
 
-        send_transfer(transfer[0].address, depth, min_weight_magnitude, transfer, { "reference": tail })
+        send_transfer(transfer[0].address, depth, min_weight_magnitude, transfer, {"reference": tail})
 
         sleep params["delay"] if params["delay"]
 

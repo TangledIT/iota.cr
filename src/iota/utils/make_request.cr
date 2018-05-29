@@ -39,12 +39,10 @@ module IOTA
 
       # TODO : Write
       def batched_send(command, keys, batch_size)
-
       end
 
       # TODO : Write
       def sandbox_send(job)
-
       end
 
       def prepare_result(result, command)
