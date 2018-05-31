@@ -39,7 +39,7 @@ module IOTA
       ]
 
       def self.trits(input, state = nil)
-        trits = state || Array(Int32).new
+        trits = state || Hash(Int32, Int32).new
         if input.is_a?(Int32)
           absolute_value = input < 0 ? -input : input
 
@@ -60,9 +60,8 @@ module IOTA
             end
           end
         else
-          (0..input.size).step(1) do |i|
-            char = input.to_s[i]
-            index = TRYTES_ALPHABET.index(input.char_at(i))
+          (0..input.size - 1).step(1) do |i|
+            index = TRYTES_ALPHABET.index(input.char_at(i)).as(Int32)
             trits[i * 3] = TRYTES_TRITS[index][0]
             trits[i * 3 + 1] = TRYTES_TRITS[index][1]
             trits[i * 3 + 2] = TRYTES_TRITS[index][2]
@@ -73,7 +72,7 @@ module IOTA
 
       def self.trytes(trits)
         trytes = ""
-        (0..trits.size).step(3) do |i|
+        (0..trits.size - 1).step(3) do |i|
           (0..TRYTES_ALPHABET.size).step(1) do |j|
             if TRYTES_TRITS[j][0] === trits[i] &&
                TRYTES_TRITS[j][1] === trits[i + 1] &&
