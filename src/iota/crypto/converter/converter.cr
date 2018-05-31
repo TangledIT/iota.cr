@@ -1,41 +1,41 @@
 module IOTA
   module Crypto
     module Converter
-      RADIX = 3
-      RADIX_BYTES = 256
-      MAX_TRIT_VALUE = 1
-      MIN_TRIT_VALUE = -1
-      BYTE_HASH_LENGTH = 48
+      RADIX            =   3
+      RADIX_BYTES      = 256
+      MAX_TRIT_VALUE   =   1
+      MIN_TRIT_VALUE   =  -1
+      BYTE_HASH_LENGTH =  48
 
       TRYTES_ALPHABET = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      TRYTES_TRITS = [
-        [ 0,  0,  0],
-        [ 1,  0,  0],
-        [-1,  1,  0],
-        [ 0,  1,  0],
-        [ 1,  1,  0],
-        [-1, -1,  1],
-        [ 0, -1,  1],
-        [ 1, -1,  1],
-        [-1,  0,  1],
-        [ 0,  0,  1],
-        [ 1,  0,  1],
-        [-1,  1,  1],
-        [ 0,  1,  1],
-        [ 1,  1,  1],
+      TRYTES_TRITS    = [
+        [0, 0, 0],
+        [1, 0, 0],
+        [-1, 1, 0],
+        [0, 1, 0],
+        [1, 1, 0],
+        [-1, -1, 1],
+        [0, -1, 1],
+        [1, -1, 1],
+        [-1, 0, 1],
+        [0, 0, 1],
+        [1, 0, 1],
+        [-1, 1, 1],
+        [0, 1, 1],
+        [1, 1, 1],
         [-1, -1, -1],
-        [ 0, -1, -1],
-        [ 1, -1, -1],
-        [-1,  0, -1],
-        [ 0,  0, -1],
-        [ 1,  0, -1],
-        [-1,  1, -1],
-        [ 0,  1, -1],
-        [ 1,  1, -1],
-        [-1, -1,  0],
-        [ 0, -1,  0],
-        [ 1, -1,  0],
-        [-1,  0,  0]
+        [0, -1, -1],
+        [1, -1, -1],
+        [-1, 0, -1],
+        [0, 0, -1],
+        [1, 0, -1],
+        [-1, 1, -1],
+        [0, 1, -1],
+        [1, 1, -1],
+        [-1, -1, 0],
+        [0, -1, 0],
+        [1, -1, 0],
+        [-1, 0, 0],
       ]
 
       def self.trits(input, state = nil)
@@ -77,7 +77,6 @@ module IOTA
             if TRYTES_TRITS[j][0] === trits[i] &&
                TRYTES_TRITS[j][1] === trits[i + 1] &&
                TRYTES_TRITS[j][2] === trits[i + 2]
-
               trytes += TRYTES_ALPHABET.char_at(j)
               break
             end

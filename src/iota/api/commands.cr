@@ -1,7 +1,6 @@
 module IOTA
   module API
     class Commands
-
       def attach_to_tangle(trunk_transaction, branch_transaction, min_weight_magnitude, trytes)
         {
           "command"            => "attachToTangle",
@@ -103,8 +102,8 @@ module IOTA
 
       def were_addresses_spent_from(addresses)
         {
-          "command" => "wereAddressesSpentFrom",
-          "addresses"   => addresses,
+          "command"   => "wereAddressesSpentFrom",
+          "addresses" => addresses,
         }
       end
     end
