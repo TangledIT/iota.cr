@@ -20,6 +20,12 @@ module IOTA
           0x5e69ebef
         ]
 
+        def self.bigint_not(array)
+          (0..array.size).step(1) do |i|
+            array[i] = (~array[i]).unsafe_shr(0)
+          end
+        end
+
         def self.words_to_trits(words)
           raise "Invalid words length" if words.size != INT_LENGTH
 
@@ -38,7 +44,7 @@ module IOTA
               flip_trits = true
             else
               bigint_add_small(base, 1)
-              tmp = ta_slice(HALF_3)
+              tmp = HALF_3.dup
               bigint_sub(tmp, base)
               base = tmp
             end
@@ -52,9 +58,9 @@ module IOTA
 
           trits.each do |a|
             if a == -1
-              base = ta_slice(HALF_3)
+              base = HALF_3.dup
               bigint_not(base)
-              bigint_add_smal(base, 1)
+              bigint_add_small(base, 1)
             else
               size = 1
               (trits.size..0).step(-1) do |i|
@@ -67,7 +73,7 @@ module IOTA
                   (0..sz.size).step(1) do |j|
                     v = base[j] * RADIX + carry
                     carry = rshift(v, 32)
-                    base[j] = (v & 0xFFFFFFFF) >> 0
+                    base[j] = (v & 0xFFFFFFFF).unsafe_shr(0)
                   end
 
                   if carry > 0
@@ -88,7 +94,7 @@ module IOTA
                 if bigint_cmp(HALF_3, base) <= 0
                   bigint_sub(base, HALF_3)
                 else
-                  tmp = ta_slice(HALF_3)
+                  tmp = HALF_3.dup
                   bigint_sub(tmp, base)
                   bigint_not(tmp)
                   bigint_add_small(tmp, 1)
@@ -107,22 +113,19 @@ module IOTA
           base
         end
 
-        private def swap32(val)
+        # Tested
+        def self.swap32(val)
           ((val & 0xFF) << 24) |
           ((val & 0xFF00) << 8) |
           ((val >> 8) & 0xFF00) |
           ((val >> 24) & 0xFF)
         end
 
-        private def ta_slice(array)
-          array.slice
-        end
-
-        private def bigint_sub(base, rh)
+        private def self.bigint_sub(base, rh)
           noborrow = true
 
           (0..base.size).step(1) do |i|
-            vc = full_add(base[i], (~rh[i] >> 0), noborrow)
+            vc = full_add(base[i], (~rh[i].unsafe_shr(0)), noborrow)
             base[i] = vc[0]
             noborrow = vc[1]
           end
@@ -130,25 +133,25 @@ module IOTA
           raise "noborrow" if noborrow
         end
 
-        private def bigint_add_small(base, other)
+        private def self.bigint_add_small(base, other)
           vc = full_add(base[0], other, false)
-          base[0] = vc[0]
+          base[0] = vc[0].as(Int64)
           carry = vc[1]
 
           i = 1
           while carry && i < base.size
             vc = full_add(base[i], 0, carry)
-            base[i] = vc[0]
+            base[i] = vc[0].as(Int64)
             carry = vc[1]
             i = i + 1
           end
         end
 
-        private def bigint_sub(base, rh)
+        private def self.bigint_sub(base, rh)
           noborrow = true
 
           (0..base.size).step(1) do |i|
-            vc = full_add(base[i], (~rh[i] >> 0), noborrow)
+            vc = full_add(base[i], (~rh[i].unsafe_shr(0)), noborrow)
             base[i] = vc[0]
             noborrow = vc[1]
           end
@@ -156,10 +159,10 @@ module IOTA
           raise "noborrow" if noborrow
         end
 
-        private def bigint_cmp(lh, rh)
+        private def self.bigint_cmp(lh, rh)
           (lh.size..0).step(-1) do |i|
-            a = lh[1] >> 0
-            b = rh[i] >> 0
+            a = lh[1].unsafe_shr(0)
+            b = rh[i].unsafe_shr(0)
             if a < b
               return -1
             elsif a > b
@@ -169,17 +172,11 @@ module IOTA
           0
         end
 
-        private def bigint_not(array)
-          (0..array.size).step(1) do |i|
-            array[i] = (~array[i]) >> 0
-          end
-        end
-
-        private def ta_reverse(array)
+        private def self.ta_reverse(array)
           array.reverse!
         end
 
-        private def bigint_add(base, rh)
+        private def self.bigint_add(base, rh)
           carry = false
           (0..base.size).step(1) do |i|
             vc = full_add(base[i], rh[i], carry)
@@ -188,22 +185,22 @@ module IOTA
           end
         end
 
-        private def full_add(lh, rh, carry)
+        private def self.full_add(lh, rh, carry)
           v = lh + rh
           l = (rshift(v, 32)) & 0xFFFFFFFF
-          r = (v & 0xFFFFFFFF) >> 0
+          r = (v & 0xFFFFFFFF).unsafe_shr(0)
           carry1 = (l != 0)
 
           v = r + 1 if carry
           l = (rshift(r, 32)) & 0xFFFFFFFF
-          r = (v & 0xFFFFFFFF) >> 0
+          r = (v & 0xFFFFFFFF).unsafe_shr(0)
           carry2 = (l != 0)
 
           [r, carry1 || carry2]
         end
 
-        private def rshift(number, shift)
-          (number / (2 ** shift)) >> 0
+        private def self.rshift(number, shift)
+          (number / (2 ** shift)).unsafe_shr(0)
         end
       end
     end

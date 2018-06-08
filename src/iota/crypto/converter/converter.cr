@@ -119,6 +119,54 @@ module IOTA
 
         destination
       end
+
+      def self.convert_to_bytes(trits)
+        bigint = convert_base_to_bigint(trits, 3)
+        puts bigint
+        convert_bigint_to_bytes(bigint)
+      end
+
+      def self.convert_base_to_bigint(array, base)
+        bigint = 0
+        (0..array.size - 1).step(1) do |i|
+          bigint = bigint + array[i] * (base ** i)
+        end
+        bigint
+      end
+
+      def self.convert_bigint_to_bytes(big)
+        bytes_array_temp = Array(UInt8).new
+        (0..48).step(1) do |pos|
+          bytes_array_temp << ((big.abs.to_u8 >> pos * 8) % (1 << 8)).to_u8
+        end
+
+        bytes_array = Array(UInt8).new
+        (bytes_array_temp.size..0).step(-1) do |i|
+          x = bytes_array_temp[i]
+          bytes_array << (x <= 0x7F ? x : x - 0x100)
+        end
+
+        if big < 0
+          bytes_array = bytes_array.map { |val| ~val }
+
+          (0..bytes_array.size).step(1) do |pos|
+            add = (bytes_array[pos] & 0xFF) + 1
+            bytes_array[pos] = add <= 0x7F ? add : add - 0x100
+            break if bytes_array[pos] != 0
+          end
+        end
+
+        bytes_array
+      end
+
+      def self.convert_sign(byte)
+        if byte < 0
+          return (256 + byte.to_u8).to_u8
+        elsif byte > 127
+          return (-256 + byte.to_u8).to_u8
+        end
+        return byte.to_u8
+      end
     end
   end
 end

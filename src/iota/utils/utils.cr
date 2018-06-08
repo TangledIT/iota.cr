@@ -9,6 +9,25 @@ module IOTA
         @validator = InputValidator.new
       end
 
+      # TODO : Finish
+      def add_checksum(input_value, checksum_length, is_address)
+        checksum_length = checksum_length || 9
+        is_address = (is_address != false)
+
+        validation_length = is_address ? 81 : nil
+
+        is_single_input = @validator.is_string?(input_value)
+
+        if is_single_input
+          single_inputs = [input_value]
+        else
+          single_inputs = input_value
+        end
+
+        inputs_with_checksum = Array(String).new
+
+      end
+
       def no_checksum(address)
         is_single_address = @validator.is_string?(address)
 
