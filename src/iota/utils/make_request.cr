@@ -39,6 +39,15 @@ module IOTA
 
       # TODO : Write
       def batched_send(command, keys, batch_size)
+        request_stack = Array(String).new
+
+        keys.each do |key|
+          puts command[key]
+          #clone = command[key].slice
+          #puts slice
+
+        end
+        { true, { } of String => String }
       end
 
       # TODO : Write
@@ -58,8 +67,8 @@ module IOTA
           "checkConsistency"   => "state",
         }
 
-        if result && result_map.key?(command)
-          if command === "attachToTangle" && result["id"]?
+        if result && result_map.has_key?(command)
+          if command == "attachToTangle" && result["id"]?
             result
           else
             result = result[result_map[command]]

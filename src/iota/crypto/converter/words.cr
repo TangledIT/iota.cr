@@ -2,10 +2,10 @@ module IOTA
   module Crypto
     module Converter
       module Words
-        INT_LENGTH = 12
+        INT_LENGTH  = 12
         BYTE_LENGTH = 48
-        RADIX = 3
-        HALF_3 = [
+        RADIX       =  3
+        HALF_3      = [
           0xa5ce8964,
           0x9f007669,
           0x1484504f,
@@ -17,7 +17,7 @@ module IOTA
           0xa9f6808b,
           0xaa06a805,
           0xa87fabdf,
-          0x5e69ebef
+          0x5e69ebef,
         ]
 
         def self.bigint_not(array)
@@ -35,7 +35,7 @@ module IOTA
           base = ta_reverse(base)
 
           flip_trits = false
-          if(base[INT_LENGTH -1] >> 31 == 0)
+          if (base[INT_LENGTH - 1] >> 31 == 0)
             bigint_add(base, HALF_3)
           else
             bigint_not(base)
@@ -116,9 +116,9 @@ module IOTA
         # Tested
         def self.swap32(val)
           ((val & 0xFF) << 24) |
-          ((val & 0xFF00) << 8) |
-          ((val >> 8) & 0xFF00) |
-          ((val >> 24) & 0xFF)
+            ((val & 0xFF00) << 8) |
+            ((val >> 8) & 0xFF00) |
+            ((val >> 24) & 0xFF)
         end
 
         private def self.bigint_sub(base, rh)

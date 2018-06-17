@@ -2,6 +2,7 @@ module IOTA
   module API
     class Api
       include Wrappers
+      include Helpers::BatchSend
 
       def initialize(make_request = IOTA::Utils::MakeRequest::Class, sandbox = String.new)
         @make_request = make_request || IOTA::Utils::MakeRequest.new
@@ -16,8 +17,20 @@ module IOTA
                              "getInclusionStates", "getTrytes"]
         command_keys = ["addresses", "bundles", "hashes", "tags",
                         "transactions", "approvees"]
+        batch_size = 1000
 
-        # TODO: Write batched sends
+        if commands_to_batch.includes?(command["command"])
+          keys_to_batch = Array(String).new
+          command_keys.each do |key|
+            if command.has_key?(key) && command[key].is_a?(Array) && command[key].as(Array).size > batch_size
+              keys_to_batch.push(key)
+            end
+          end
+
+          if keys_to_batch.size > 0
+            return @make_request.batched_send(command, keys_to_batch, batch_size)
+          end
+        end
 
         @make_request.send(command)
       end

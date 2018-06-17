@@ -17,11 +17,10 @@ module IOTA
       def absorb(trits, offset, length)
         raise "Illegal length provided" if (length && ((length % 243) != 0))
 
-        #pad = (trits.size % Curl::HASH_LENGTH) || Curl::HASH_LENGTH
-        #puts trits
+        # pad = (trits.size % Curl::HASH_LENGTH) || Curl::HASH_LENGTH
+        # puts trits
         # trits.merge[0] * (Curl::HASH_LENGTH - pad)
         while offset < length
-
           stop = Math.min(offset + Curl::HASH_LENGTH, length)
 
           trits[stop - 1] = 0 if stop - offset == Curl::HASH_LENGTH

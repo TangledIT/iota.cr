@@ -2,7 +2,9 @@ module IOTA
   module API
     module Helpers
       module BatchSend
-        # TODO: Write
+        def batched_send(command)
+
+        end
       end
     end
   end

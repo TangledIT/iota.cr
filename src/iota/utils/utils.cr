@@ -25,7 +25,6 @@ module IOTA
         end
 
         inputs_with_checksum = Array(String).new
-
       end
 
       def no_checksum(address)

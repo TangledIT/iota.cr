@@ -29,7 +29,7 @@ describe IOTA::API::Api do
         ["PUTVHDD9QPORUQTNUMIJOHDCBGRGTDSUWQPXRGFRTDOTUQBZCTCLTNUTKHIYWDISXKOZKWACRWPOEH999"]
       )
       success.should be_true
-      data["trytes"].size.should eq(1)
+      data.size.should eq(1)
     end
   end
 
@@ -40,7 +40,7 @@ describe IOTA::API::Api do
         ["9VSCYRLRYCGUOSLKUWAJ9QENGYQHSZAZLJMYTVVTBEKGF9UVQNEUZMNEMCQRTIOK9DFFBSRACWKHPX999"]
       )
       success.should be_true
-      data["states"][0].should be_true
+      data[0].should be_true
     end
   end
 
@@ -80,8 +80,8 @@ describe IOTA::API::Api do
     it "should return tips" do
       success, data = CLIENT.api.get_tips
       success.should be_true
-      data["hashes"][0].to_s.size.should eq(81)
-      data["hashes"].size.should be > 0
+      data[0].to_s.size.should eq(81)
+      data.size.should be > 0
     end
   end
 
