@@ -5,7 +5,7 @@ describe IOTA::Crypto::Converter do
     trytes = "GYOMKVTSNHVJNCNFBBAH9AAMXLPLLLROQY99QN9DLSJUHDPBLCFFAIQXZA9BKMBJCYSFHFPXAHDWZFEIZ"
 
     trits = IOTA::Crypto::Converter.trits(trytes)
-    trits.should be_a(Hash(Int32, Int32))
+    trits.should be_a(Array(Int32))
     trits.size.should eq 243
 
     trytes_output = IOTA::Crypto::Converter.trytes(trits)

@@ -1,3 +1,5 @@
+require "big"
+
 module IOTA
   module Crypto
     module Converter
@@ -8,34 +10,34 @@ module IOTA
       BYTE_HASH_LENGTH =  48
 
       TRYTES_ALPHABET = "9ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      TRYTES_TRITS    = [
-        [0, 0, 0],
-        [1, 0, 0],
-        [-1, 1, 0],
-        [0, 1, 0],
-        [1, 1, 0],
-        [-1, -1, 1],
-        [0, -1, 1],
-        [1, -1, 1],
-        [-1, 0, 1],
-        [0, 0, 1],
-        [1, 0, 1],
-        [-1, 1, 1],
-        [0, 1, 1],
-        [1, 1, 1],
+      TRYTES_TRITS = [
+        [ 0,  0,  0],
+        [ 1,  0,  0],
+        [-1,  1,  0],
+        [ 0,  1,  0],
+        [ 1,  1,  0],
+        [-1, -1,  1],
+        [ 0, -1,  1],
+        [ 1, -1,  1],
+        [-1,  0,  1],
+        [ 0,  0,  1],
+        [ 1,  0,  1],
+        [-1,  1,  1],
+        [ 0,  1,  1],
+        [ 1,  1,  1],
         [-1, -1, -1],
-        [0, -1, -1],
-        [1, -1, -1],
-        [-1, 0, -1],
-        [0, 0, -1],
-        [1, 0, -1],
-        [-1, 1, -1],
-        [0, 1, -1],
-        [1, 1, -1],
-        [-1, -1, 0],
-        [0, -1, 0],
-        [1, -1, 0],
-        [-1, 0, 0],
+        [ 0, -1, -1],
+        [ 1, -1, -1],
+        [-1,  0, -1],
+        [ 0,  0, -1],
+        [ 1,  0, -1],
+        [-1,  1, -1],
+        [ 0,  1, -1],
+        [ 1,  1, -1],
+        [-1, -1,  0],
+        [ 0, -1,  0],
+        [ 1, -1,  0],
+        [-1,  0,  0]
       ]
 
       def self.trits(input, state = nil)
@@ -67,7 +69,7 @@ module IOTA
             trits[i * 3 + 2] = TRYTES_TRITS[index][2]
           end
         end
-        trits
+        trits.values
       end
 
       def self.trytes(trits)
@@ -122,14 +124,14 @@ module IOTA
 
       def self.convert_to_bytes(trits)
         bigint = convert_base_to_bigint(trits, 3)
-        puts bigint
-        convert_bigint_to_bytes(bigint)
+        bytes_k = convert_bigint_to_bytes(bigint)
+        bytes_k
       end
 
       def self.convert_base_to_bigint(array, base)
-        bigint = 0
+        bigint = BigInt.new
         (0..array.size - 1).step(1) do |i|
-          bigint = bigint + array[i] * (base ** i)
+          bigint = bigint + (array[i] * (base ** i))
         end
         bigint
       end
@@ -140,11 +142,7 @@ module IOTA
           bytes_array_temp << ((big.abs.to_u8 >> pos * 8) % (1 << 8)).to_u8
         end
 
-        bytes_array = Array(UInt8).new
-        (bytes_array_temp.size..0).step(-1) do |i|
-          x = bytes_array_temp[i]
-          bytes_array << (x <= 0x7F ? x : x - 0x100)
-        end
+        bytes_array = bytes_array_temp.reverse.map { |x| x <= 0x7F ? x : x - 0x100 }
 
         if big < 0
           bytes_array = bytes_array.map { |val| ~val }

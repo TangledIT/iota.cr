@@ -42,7 +42,7 @@ module IOTA
         request_stack = Array(String).new
 
         keys.each do |key|
-          puts command[key]
+          # puts command[key]
           #clone = command[key].slice
           #puts slice
 

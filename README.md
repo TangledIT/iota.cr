@@ -1,3 +1,4 @@
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iotaledger/iota.lib.js/master/LICENSE)
 # IOTA Crystal Library (not official)
 
 This is the unofficial Crystal library for the IOTA Core.
