@@ -28,39 +28,14 @@ module IOTA
          trits[limit - 1] = 0 if limit - offset == Curl::HASH_LENGTH
 
           signed_bytes = Converter.convert_to_bytes(trits[offset...limit])
-          # p signed_bytes
-          # unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b) }
 
-          #@k.update(unsigned_bytes)
+          unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b).to_u8 }
+          bytes_slice = Slice.new(unsigned_bytes.to_unsafe, unsigned_bytes.size)
+
+          @k.update(bytes_slice)
 
           offset = offset + Curl::HASH_LENGTH
         end
-
-
-        # # pad = (trits.size % Curl::HASH_LENGTH) || Curl::HASH_LENGTH
-        # # puts trits
-        # # trits.merge[0] * (Curl::HASH_LENGTH - pad)
-        # while offset < length
-        #   stop = Math.min(offset + Curl::HASH_LENGTH, length)
-        #
-        #   trits[stop - 1] = 0 if stop - offset == Curl::HASH_LENGTH
-        #
-        #   selected_trits = Array(Int32).new
-        #   (offset..stop).step(1) do |i|
-        #     selected_trits << i
-        #   end
-        #
-        #   signed_nums = Converter.convert_to_bytes(trits.select!(selected_trits))
-        #
-        #   unsigned_bytes = Array(UInt8).new
-        #   (0..signed_nums.size - 1).step(1) do |i|
-        #     unsigned_bytes << Converter.convert_sign(signed_nums[i])
-        #   end
-        #
-        #   @k.update(unsigned_bytes.to_s)
-        #
-        #   offset = offset + Curl::HASH_LENGTH
-        # end
       end
 
       def squeeze(trits, offset = 0, length = nil)

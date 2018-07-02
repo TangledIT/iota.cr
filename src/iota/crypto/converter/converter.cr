@@ -123,7 +123,7 @@ module IOTA
       end
 
       def self.convert_to_bytes(trits)
-        bigint = convert_base_to_bigint(trits, 3)
+        bigint = convert_base_to_big_int(trits, 3)
         bytes_k = convert_bigint_to_bytes(bigint)
         bytes_k
       end
@@ -135,17 +135,9 @@ module IOTA
       end
 
       def self.convert_base_to_big_int(array, base)
-        bigint = 0
-        (0...array.size).step(1) do |i|
-          bigint += array[i] * (base ** i)
-        end
-        bigint
-      end
-
-      def self.convert_base_to_bigint(array, base)
         bigint = BigInt.new
-        (0..array.size - 1).step(1) do |i|
-          bigint = bigint + (array[i] * (base ** i))
+        (0...array.size).step(1) do |i|
+          bigint += array[i] * (BigInt.new(base) ** BigInt.new(i))
         end
         bigint
       end
@@ -176,20 +168,20 @@ module IOTA
       end
 
       def self.convert_bigint_to_bytes(big)
-        bytes_array_temp = Array(UInt8).new
-        (0..48).step(1) do |pos|
-          bytes_array_temp << ((big.abs.to_u8 >> pos * 8) % (1 << 8)).to_u8
+        bytes_array_temp = Array(Int32).new
+        (0..47).step(1) do |pos|
+          bytes_array_temp << ((big.abs >> pos * 8) % (1 << 8)).to_i32
         end
 
         bytes_array = bytes_array_temp.reverse.map { |x| x <= 0x7F ? x : x - 0x100 }
 
         if big < 0
           bytes_array = bytes_array.map { |val| ~val }
-
-          (0..bytes_array.size).step(1) do |pos|
-            add = (bytes_array[pos] & 0xFF) + 1
-            bytes_array[pos] = add <= 0x7F ? add : add - 0x100
-            break if bytes_array[pos] != 0
+          (0..bytes_array.size).step(-1) do |pos|
+            new_pos = (bytes_array.size - 1) - pos
+            add = (bytes_array[new_pos] & 0xFF) + 1
+            bytes_array[new_pos] = add <= 0x7F ? add : add - 0x100
+            break if bytes_array[new_pos] != 0
           end
         end
 
