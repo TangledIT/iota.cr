@@ -126,12 +126,51 @@ module IOTA
         convert_bigint_to_bytes(bigint)
       end
 
+      def self.convert_to_trits(bytes)
+        big_int = convert_bytes_to_big_int(bytes)
+        trits = convert_big_int_to_base(big_int, 3, Curl::HASH_LENGTH)
+        trits
+      end
+
+      def self.convert_base_to_big_int(array, base)
+        bigint = 0
+        (0...array.size).step(1) do |i|
+          bigint += array[i] * (base ** i)
+        end
+        bigint
+      end
+
       def self.convert_base_to_bigint(array, base)
         bigint = 0
         (0..array.size - 1).step(1) do |i|
           bigint = bigint + array[i] * (base ** i)
         end
         bigint
+      end
+
+      def self.convert_big_int_to_base(big_int, base, length)
+        result = Array(Int32).new
+
+        is_negative = big_int < 0
+        quotient = big_int.abs
+
+        max, _ = (is_negative ? base : base-1).divmod(2)
+
+        length.times do
+          quotient, remainder = quotient.divmod(base)
+
+          if remainder > max
+            # Lend 1 to the next place so we can make this digit negative.
+            quotient += 1
+            remainder -= base
+          end
+
+          remainder = -remainder if is_negative
+
+          result << remainder
+        end
+
+        result
       end
 
       def self.convert_bigint_to_bytes(big)
@@ -158,6 +197,35 @@ module IOTA
 
         bytes_array
       end
+
+      def self.convert_bytes_to_big_int(array)
+        # copy of array
+        bytes_array = array.map { |x| x }
+
+        # number sign in MSB
+        signum = bytes_array[0] >= 0 ? 1 : -1
+
+        if signum == -1
+          # sub1
+          (0...bytes_array.size).reverse_each do |pos|
+            sub = (bytes_array[pos] & 0xFF) - 1
+            bytes_array[pos] = sub <= 0x7F ? sub : sub - 0x100
+            break if bytes_array[pos] != -1
+          end
+
+          # 1-compliment
+          bytes_array = bytes_array.map { |x| ~x }
+        end
+
+        # sum magnitudes and set sign
+        sum = 0
+        bytes_array.reverse!.each_with_index do |v, pos|
+          sum += (v & 0xFF) << pos * 8
+        end
+
+        sum * signum
+      end
+
 
       def self.convert_sign(byte)
         if byte < 0

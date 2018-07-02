@@ -10,8 +10,8 @@ describe IOTA::Crypto::Kerl do
     kerl.absorb(trits, 0, trits.size)
     puts kerl.k.result
 
-    # hash_trits = Hash(Int32, Int32).new
-    # kerl.squeeze(hash_trits, 0, IOTA::Crypto::Curl::HASH_LENGTH)
+    hash_trits = Hash(Int32, Int32).new
+    kerl.squeeze(hash_trits)
 
     # puts kerl.k.result
     # output = IOTA::Crypto::Converter.trytes(hash_trits)
