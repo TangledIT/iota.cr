@@ -72,7 +72,7 @@ module IOTA
         trits.values
       end
 
-      def self.trytes(trits)
+      def self.trytes(trits = Array(Int32))
         trytes = ""
         (0..trits.size - 1).step(3) do |i|
           (0..TRYTES_ALPHABET.size).step(1) do |j|
@@ -161,7 +161,7 @@ module IOTA
 
           remainder = -remainder if is_negative
 
-          result << remainder
+          result << remainder.to_i32
         end
 
         result
@@ -208,9 +208,9 @@ module IOTA
         end
 
         # sum magnitudes and set sign
-        sum = 0
+        sum = BigInt.new
         bytes_array.reverse!.each_with_index do |v, pos|
-          sum += (v & 0xFF) << pos * 8
+          sum += (BigInt.new(v) & 0xFF) << BigInt.new(pos) * 8
         end
 
         sum * signum

@@ -39,12 +39,16 @@ module IOTA
       end
 
       def squeeze(trits, offset = 0, length = nil)
+        pad = trits.size % Curl::HASH_LENGTH != 0 ? trits.size % Curl::HASH_LENGTH : Curl::HASH_LENGTH
+        trits.concat([0] * (Curl::HASH_LENGTH - pad))
+
+        length = trits.size > 0 ? trits.size : Curl::HASH_LENGTH if length.nil?
+
         raise "Illegal length provided" if (length && ((length % 243) != 0))
 
         length = trits.size > 0 ? trits.size : Curl::HASH_LENGTH if length.nil?
 
         while offset < length
-
           unsigned_hash = @k.result
 
           signed_hash = unsigned_hash.map { |b| Converter.convert_sign(b) }
@@ -55,16 +59,23 @@ module IOTA
 
           limit = [Curl::HASH_LENGTH, length - offset].min
 
-          trits[offset...offset + limit] = trits_from_hash[0...limit]
+          trits = trits_from_hash[0...limit]
 
-          flipped_bytes = unsigned_hash.bytes.map{ |b| Converter.convert_sign(~b)}.pack("c*").force_encoding("UTF-8")
+          if trits.size == 0
+            trits = trits_from_hash[0...limit]
+          else
+            trits = trits + trits_from_hash[0...limit]
+          end
 
-          reset
+          p trits
+
+          flipped_bytes = unsigned_hash.map{ |b| Converter.convert_sign(~b) }
 
           @k.update(flipped_bytes)
 
           offset = offset + Curl::HASH_LENGTH
         end
+        trits
       end
     end
   end
