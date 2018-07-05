@@ -1,6 +1,6 @@
 require "./../../spec_helper"
 
-describe IOTA::Crypto::Converter do
+describe IOTA::Crypto do
   it "should create trits from trytes and reversed" do
     trytes = "GYOMKVTSNHVJNCNFBBAH9AAMXLPLLLROQY99QN9DLSJUHDPBLCFFAIQXZA9BKMBJCYSFHFPXAHDWZFEIZ"
 

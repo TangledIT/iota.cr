@@ -22,17 +22,20 @@ module IOTA
 
         raise "Illegal length provided" if (length && ((length % 243) != 0))
 
+        update_string = String.new
+
         while offset < length
          limit = [offset + Curl::HASH_LENGTH, length].min
 
          trits[limit - 1] = 0 if limit - offset == Curl::HASH_LENGTH
 
           signed_bytes = Converter.convert_to_bytes(trits[offset...limit])
+          unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b) }
 
-          unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b).to_u8 }
           bytes_slice = Slice.new(unsigned_bytes.to_unsafe, unsigned_bytes.size)
+          update_string += String.new(bytes_slice)
 
-          @k.update(bytes_slice)
+          @k.update(update_string)
 
           offset = offset + Curl::HASH_LENGTH
         end
@@ -46,12 +49,12 @@ module IOTA
 
         raise "Illegal length provided" if (length && ((length % 243) != 0))
 
-        length = trits.size > 0 ? trits.size : Curl::HASH_LENGTH if length.nil?
+        update_string = String.new
 
         while offset < length
           unsigned_hash = @k.result
 
-          signed_hash = unsigned_hash.map { |b| Converter.convert_sign(b) }
+          signed_hash = unsigned_hash.map { |b| Converter.convert_sign_i32(b.to_i32) }
 
           trits_from_hash = Converter.convert_to_trits(signed_hash)
 
@@ -59,19 +62,16 @@ module IOTA
 
           limit = [Curl::HASH_LENGTH, length - offset].min
 
-          trits = trits_from_hash[0...limit]
-
           if trits.size == 0
             trits = trits_from_hash[0...limit]
           else
             trits = trits + trits_from_hash[0...limit]
           end
 
-          p trits
+          flipped_bytes = unsigned_hash.map{ |b| Converter.convert_sign(~b.to_i32) }
 
-          flipped_bytes = unsigned_hash.map{ |b| Converter.convert_sign(~b) }
-
-          @k.update(flipped_bytes)
+          update_string += String.new(flipped_bytes)
+          @k.update(update_string)
 
           offset = offset + Curl::HASH_LENGTH
         end

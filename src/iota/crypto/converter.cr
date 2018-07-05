@@ -225,6 +225,15 @@ module IOTA
         end
         return byte.to_u8
       end
+
+      def self.convert_sign_i32(byte)
+        if byte < 0
+          return (256 + byte)
+        elsif byte > 127
+          return (-256 + byte)
+        end
+        return byte
+      end
     end
   end
 end
