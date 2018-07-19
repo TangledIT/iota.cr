@@ -1,10 +1,10 @@
-name: iota.cr
+name: iota
 version: 0.1.0
 
 authors:
-  - vvangemert <vincent@floorplanner.com>
+  - TangledIT <team@tangled.it>
 
-crystal: 0.25.0
+crystal: 0.25.1
 
 license: MIT
 
