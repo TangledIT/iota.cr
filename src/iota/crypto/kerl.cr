@@ -22,70 +22,60 @@ module IOTA
 
         raise "Illegal length provided" if (length && ((length % 243) != 0))
 
+        update_string = String.new
+
         while offset < length
          limit = [offset + Curl::HASH_LENGTH, length].min
 
          trits[limit - 1] = 0 if limit - offset == Curl::HASH_LENGTH
 
           signed_bytes = Converter.convert_to_bytes(trits[offset...limit])
-          # p signed_bytes
-          # unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b) }
+          unsigned_bytes = signed_bytes.map{ |b| Converter.convert_sign(b) }
 
-          #@k.update(unsigned_bytes)
+          bytes_slice = Slice.new(unsigned_bytes.to_unsafe, unsigned_bytes.size)
+          update_string += String.new(bytes_slice)
+
+          @k.update(update_string)
 
           offset = offset + Curl::HASH_LENGTH
         end
-
-
-        # # pad = (trits.size % Curl::HASH_LENGTH) || Curl::HASH_LENGTH
-        # # puts trits
-        # # trits.merge[0] * (Curl::HASH_LENGTH - pad)
-        # while offset < length
-        #   stop = Math.min(offset + Curl::HASH_LENGTH, length)
-        #
-        #   trits[stop - 1] = 0 if stop - offset == Curl::HASH_LENGTH
-        #
-        #   selected_trits = Array(Int32).new
-        #   (offset..stop).step(1) do |i|
-        #     selected_trits << i
-        #   end
-        #
-        #   signed_nums = Converter.convert_to_bytes(trits.select!(selected_trits))
-        #
-        #   unsigned_bytes = Array(UInt8).new
-        #   (0..signed_nums.size - 1).step(1) do |i|
-        #     unsigned_bytes << Converter.convert_sign(signed_nums[i])
-        #   end
-        #
-        #   @k.update(unsigned_bytes.to_s)
-        #
-        #   offset = offset + Curl::HASH_LENGTH
-        # end
       end
 
-      def squeeze(trits, offset, length)
+      def squeeze(trits, offset = 0, length = nil)
+        pad = trits.size % Curl::HASH_LENGTH != 0 ? trits.size % Curl::HASH_LENGTH : Curl::HASH_LENGTH
+        trits.concat([0] * (Curl::HASH_LENGTH - pad))
+
+        length = trits.size > 0 ? trits.size : Curl::HASH_LENGTH if length.nil?
+
         raise "Illegal length provided" if (length && ((length % 243) != 0))
+
+        update_string = String.new
+
         while offset < length
-          k_copy = @k.clone
-          final = k_copy.result
+          unsigned_hash = @k.result
 
-          trit_state = Converter::Words.words.words_to_trits(final.words)
+          signed_hash = unsigned_hash.map { |b| Converter.convert_sign_i32(b.to_i32) }
 
-          i = 0
-          limit = (length < Curl::HASH_LENGTH ? length : Curl::HASH_LENGTH)
+          trits_from_hash = Converter.convert_to_trits(signed_hash)
 
-          while i < limit
-            trits[offset += 1] = trit_state[i += 1]
+          trits_from_hash[Curl::HASH_LENGTH - 1] = 0
+
+          limit = [Curl::HASH_LENGTH, length - offset].min
+
+          if trits.size == 0
+            trits = trits_from_hash[0...limit]
+          else
+            trits = trits + trits_from_hash[0...limit]
           end
 
-          reset
+          flipped_bytes = unsigned_hash.map{ |b| Converter.convert_sign(~b.to_i32) }
 
-          (0..final.words.size).step(1) do |i|
-            final.words[i] = final.words[i] ^ 0xFFFFFFFF
-          end
+          update_string += String.new(flipped_bytes)
+          @k.update(update_string)
 
-          @k.update(final)
+          offset = offset + Curl::HASH_LENGTH
         end
+        trits
       end
     end
   end

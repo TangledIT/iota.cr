@@ -1,8 +1,22 @@
 module IOTA
   module API
     module Wrappers
-      # TODO: write
       def get_transactions_objects(hashes)
+        if !@validator.is_array_of_hashes?(hashes)
+          return send_data(false, "Invalid Hashes")
+        end
+
+        trytes = get_trytes(hashes)
+        transaction_objects = Array(String).new
+
+        trytes.each_with_index do |tryte, index|
+          if !tryte
+            transaction_objects << ""
+          else
+            transaction_objects << @utils.transaction_object(tryte, hashes[index])
+          end
+        end
+        transaction_objects
       end
 
       def find_transaction_objects(input)
@@ -20,12 +34,41 @@ module IOTA
         store_transactions(trytes)
       end
 
-      # TODO: write
       def send_trytes(trytes, depth, min_weight_magnitude, options)
+        if !@validator.is_value?(depth)
+          return send_data(false, "Invalid depth")
+        end
+
+        if !@validator.is_value(min_weight_magnitude)
+          return send_data(false, "Invalid min_weight_magnitude")
+        end
+
+        to_approve = get_transactions_to_approve(depth, options["reference"])
+
+        attached = attach_to_tangle(to_approve["trunk_transaction"], to_approve["branch_transaction"], min_weight_magnitude, trytes)
+
+        # TODO: Test on sandbox
+        stored_attached = store_and_broadcast(attached)
+
+        final_txs = Array(String).new
+
+        stored_attached.each do |trytes|
+          final_txs << @utils.transaction_object(trytes)
+        end
+        final_txs
       end
 
-      # TODO: write
       def send_transfer(seed, depth, min_weight_magnitude, transfers, options)
+        if !@validator.is_value?(depth)
+          return send_data(false, "Invalid depth")
+        end
+
+        if !@validator.is_value(min_weight_magnitude)
+          return send_data(false, "Invalid min_weight_magnitude")
+        end
+
+        trytes = prepare_transfers(seed, transfers, options)
+        send_trytes(trytes, depth, min_weight_magnitude, options) unless trytes
       end
 
       def promote_transaction(tail, depth, min_weight_magnitude, transfers, params)

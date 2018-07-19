@@ -72,7 +72,7 @@ module IOTA
         trits.values
       end
 
-      def self.trytes(trits)
+      def self.trytes(trits = Array(Int32))
         trytes = ""
         (0..trits.size - 1).step(3) do |i|
           (0..TRYTES_ALPHABET.size).step(1) do |j|
@@ -123,39 +123,99 @@ module IOTA
       end
 
       def self.convert_to_bytes(trits)
-        bigint = convert_base_to_bigint(trits, 3)
+        bigint = convert_base_to_big_int(trits, 3)
         bytes_k = convert_bigint_to_bytes(bigint)
         bytes_k
       end
 
-      def self.convert_base_to_bigint(array, base)
+      def self.convert_to_trits(bytes)
+        big_int = convert_bytes_to_big_int(bytes)
+        trits = convert_big_int_to_base(big_int, 3, Curl::HASH_LENGTH)
+        trits
+      end
+
+      def self.convert_base_to_big_int(array, base)
         bigint = BigInt.new
-        (0..array.size - 1).step(1) do |i|
-          bigint = bigint + (array[i] * (base ** i))
+        (0...array.size).step(1) do |i|
+          bigint += array[i] * (BigInt.new(base) ** BigInt.new(i))
         end
         bigint
       end
 
+      def self.convert_big_int_to_base(big_int, base, length)
+        result = Array(Int32).new
+
+        is_negative = big_int < 0
+        quotient = big_int.abs
+
+        max, _ = (is_negative ? base : base-1).divmod(2)
+
+        length.times do
+          quotient, remainder = quotient.divmod(base)
+
+          if remainder > max
+            # Lend 1 to the next place so we can make this digit negative.
+            quotient += 1
+            remainder -= base
+          end
+
+          remainder = -remainder if is_negative
+
+          result << remainder.to_i32
+        end
+
+        result
+      end
+
       def self.convert_bigint_to_bytes(big)
-        bytes_array_temp = Array(UInt8).new
-        (0..48).step(1) do |pos|
-          bytes_array_temp << ((big.abs.to_u8 >> pos * 8) % (1 << 8)).to_u8
+        bytes_array_temp = Array(Int32).new
+        (0..47).step(1) do |pos|
+          bytes_array_temp << ((big.abs >> pos * 8) % (1 << 8)).to_i32
         end
 
         bytes_array = bytes_array_temp.reverse.map { |x| x <= 0x7F ? x : x - 0x100 }
 
         if big < 0
           bytes_array = bytes_array.map { |val| ~val }
-
-          (0..bytes_array.size).step(1) do |pos|
-            add = (bytes_array[pos] & 0xFF) + 1
-            bytes_array[pos] = add <= 0x7F ? add : add - 0x100
-            break if bytes_array[pos] != 0
+          (0..bytes_array.size).step(-1) do |pos|
+            new_pos = (bytes_array.size - 1) - pos
+            add = (bytes_array[new_pos] & 0xFF) + 1
+            bytes_array[new_pos] = add <= 0x7F ? add : add - 0x100
+            break if bytes_array[new_pos] != 0
           end
         end
 
         bytes_array
       end
+
+      def self.convert_bytes_to_big_int(array)
+        # copy of array
+        bytes_array = array.map { |x| x }
+
+        # number sign in MSB
+        signum = bytes_array[0] >= 0 ? 1 : -1
+
+        if signum == -1
+          # sub1
+          (0...bytes_array.size).reverse_each do |pos|
+            sub = (bytes_array[pos] & 0xFF) - 1
+            bytes_array[pos] = sub <= 0x7F ? sub : sub - 0x100
+            break if bytes_array[pos] != -1
+          end
+
+          # 1-compliment
+          bytes_array = bytes_array.map { |x| ~x }
+        end
+
+        # sum magnitudes and set sign
+        sum = BigInt.new
+        bytes_array.reverse!.each_with_index do |v, pos|
+          sum += (BigInt.new(v) & 0xFF) << BigInt.new(pos) * 8
+        end
+
+        sum * signum
+      end
+
 
       def self.convert_sign(byte)
         if byte < 0
@@ -164,6 +224,15 @@ module IOTA
           return (-256 + byte.to_u8).to_u8
         end
         return byte.to_u8
+      end
+
+      def self.convert_sign_i32(byte)
+        if byte < 0
+          return (256 + byte)
+        elsif byte > 127
+          return (-256 + byte)
+        end
+        return byte
       end
     end
   end
