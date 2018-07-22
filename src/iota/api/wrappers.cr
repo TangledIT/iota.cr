@@ -124,6 +124,54 @@ module IOTA
 
       # TODO: write
       def get_new_address(seed, options)
+        if !@validator.is_trytes?(seed)
+          return send_data(false, "Invalid Trytes")
+        end
+
+        index = 0
+        if options["index"]
+          index = options["index"].to_i64
+
+          if !@validator.is_value?(index) || index < 0
+            return send_data(false, "Invalid Index")
+          end
+        end
+
+        checksum = options["checksum"] || false
+        total = options["total"] || nil
+
+        security = 2
+
+        if options["secuity"]
+          security = options["security"]
+
+          if !@validator.is_value?(security) || security < 1 || security > 3
+            return send_data(false, "Invalid Security")
+          end
+        end
+
+        all_addresses = []
+
+        if total
+          (0...total).step(1) do |i|
+            address = new_address(seed, index, security, checksum)
+            all_addresses.push(address)
+          end
+        else
+          new_address = new_address(seed, index, security, checksum)
+
+          if options["return_all"]
+            all_addresses.push(new_address)
+          end
+
+          index += 1
+
+          is_used = were_addresses_spent_from(new_address)
+
+          find_transactions({"addresses": [new_address]})
+
+
+        end
       end
 
       # TODO: write
