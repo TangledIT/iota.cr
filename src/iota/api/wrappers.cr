@@ -238,7 +238,6 @@ module IOTA
         _bundles_from_addresses(addresses, inclusion_states)
       end
 
-      # TODO: write
       def get_account_data(seed, options)
         if !@validator.is_trytes?(seed)
           return send_data(false, "Invalid Seed")
