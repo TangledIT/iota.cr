@@ -11,7 +11,7 @@ module IOTA
       end
 
       def reset
-        @k.reset
+        @k = Digest::Keccak3.new(BIT_HASH_LENGTH)
       end
 
       def absorb(trits, offset = 0, length = nil)
@@ -70,6 +70,7 @@ module IOTA
 
           flipped_bytes = unsigned_hash.map{ |b| Converter.convert_sign(~b.to_i32) }
 
+          reset
           update_string += String.new(flipped_bytes)
           @k.update(update_string)
 
