@@ -2,9 +2,9 @@
 # IOTA Crystal Library (not official)
 
 This is the unofficial Crystal library for the IOTA Core.
+It's currently under development, if you'd like to contribute, please use the dev branch.
 
-It is based on the current version of the official Javascript and will
-follow the same release cycle and version.
+It is based on the current version of the official Javascript.
 
 ## Installation
 
@@ -13,7 +13,7 @@ Add this to your application's `shard.yml`:
 ```yaml
 dependencies:
   iota.cr:
-    github: vvangemert/iota.cr
+    github: TangledIT/iota.cr
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ TODO: Write development instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/vvangemert/iota.cr/fork )
+1. Fork it ( https://github.com/TangledIT/iota.cr/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -38,4 +38,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [vvangemert](https://github.com/vvangemert) vvangemert - creator, maintainer
+- [TangledIT](https://github.com/TangledIT) vvangemert - creator, maintainer
