@@ -15,8 +15,11 @@ module IOTA
         command = {
           "command" => "findTransactions",
           "bundles" => Array(String).new,
+          "tags" => Array(String).new,
+          "addresses" => Array(String).new
         }
         command.merge!(search_values)
+        command.delete_if { |_key, value| value.empty? }
       end
 
       def get_balances(addresses, threshold)
