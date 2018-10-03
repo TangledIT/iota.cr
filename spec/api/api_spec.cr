@@ -30,6 +30,7 @@ describe IOTA::API::Api do
       )
       success.should be_true
       data.size.should eq(1)
+      data[0].to_s.size.should eq(2673)
     end
   end
 
