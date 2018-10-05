@@ -108,8 +108,19 @@ module IOTA
         send_trytes(bundle_trytes.reverse, depth, min_weight_magnitude)
       end
 
-      # TODO: write
       def broadcast_bundle(tail)
+        if !@validator.is_hash?(tail)
+          return send_data(false, "Invalid Trytes")
+        end
+
+        transactions = get_bundle(tail)
+
+        bundle_trytes = Array(String).new
+        (0...transactions.size).step(1) do |i|
+          bundle_trytes.push(@utils.transaction_trytes(transactions[i]))
+        end
+
+        return broadcast_transactions(bundle_trytes.reverse)
       end
 
       private def _new_address(seed, index, security, checksum)
@@ -122,8 +133,64 @@ module IOTA
         address
       end
 
-      # TODO: write
       def get_new_address(seed, options)
+        if !@validator.is_trytes?(seed)
+          return send_data(false, "Invalid Trytes")
+        end
+
+        index = 0
+        if options["index"]
+          index = options["index"].to_i64
+
+          if !@validator.is_value?(index) || index < 0
+            return send_data(false, "Invalid Index")
+          end
+        end
+
+        checksum = options["checksum"] || false
+        total = options["total"] || nil
+
+        security = 2
+
+        if options["secuity"]
+          security = options["security"]
+
+          if !@validator.is_value?(security) || security < 1 || security > 3
+            return send_data(false, "Invalid Security")
+          end
+        end
+
+        all_addresses = [] of String
+
+        if total
+          (0...total).step(1) do |i|
+            address = new_address(seed, index, security, checksum)
+            all_addresses.push(address)
+          end
+          return all_addresses
+        else
+          loop do
+            new_address = new_address(seed, index, security, checksum)
+
+            if options["return_all"]
+              all_addresses.push(new_address)
+            end
+
+            is_used = were_addresses_spent_from(new_address)
+
+            if !is_used
+              status, trx_hashes = find_transactions({"addresses": [new_address]})
+              is_used = trx_hashes.size > 0
+            end
+
+            index += 1
+
+            unless is_used
+              return all_addresses if options["return_all"]
+              return new_address
+            end
+          end
+        end
       end
 
       # TODO: write
@@ -146,12 +213,87 @@ module IOTA
       private def _bundles_from_addresses(addresses, inclusion_states)
       end
 
-      # TODO: write
       def get_transfers(seed, options)
+        if !@validator.is_trytes?(seed)
+          return send_data(false, "Invalid Seed")
+        end
+
+        start = options["start"] || 0
+        ends = options["end"] || nil
+        inclusion_states = options["inclusion_states"] || nil
+        security = options["security"] || 2
+
+        if start > ends || ends > (start + 500)
+          return send_data(false, "Invalid inputs provided")
+        end
+
+        address_options = {
+          "index" => start,
+          "total" => ends ? ends - start : nil,
+          "return_all" => true,
+          "security" => security
+        }
+
+        addresses = get_new_address(seed, address_options)
+        _bundles_from_addresses(addresses, inclusion_states)
       end
 
-      # TODO: write
       def get_account_data(seed, options)
+        if !@validator.is_trytes?(seed)
+          return send_data(false, "Invalid Seed")
+        end
+
+        start = options["start"] || 0
+        ends = options["end"] || nil
+        security = options["security"] || 2
+
+        if start > ends || ends > (start + 500)
+          return send_data(false, "Invalid inputs provided")
+        end
+
+        values_to_return = {
+          "latest_address" => "",
+          "addresses" => [] of String,
+          "transfers" => [] of String,
+          "inputs" => [] of String,
+          "balance" => 0
+        }
+
+        address_options = {
+          "index" => start,
+          "total" => ends ? ends - start : nil,
+          "return_all" => true,
+          "security" => security
+        }
+
+        addresses = get_new_address(seed, address_options)
+
+        values_to_return["latest_address"] = addressess.last
+        addresses.pop
+        values_to_return["addresses"] = addressess
+
+        bundles = _bundles_from_addresses(values_to_return["addresses"], true)
+        values_to_return["transfers"] = bundles
+
+        balances = get_balances(values_to_return["addresses"], 100)
+
+        (0...balances["balances"].size).step(1) do |i|
+          balance = balances["balances"][i].to_i64
+
+          values_to_return["balance"] += balance
+
+          if balance > 0
+            new_input = {
+              "address" => values_to_return["addressess"][i],
+              "key_index" => start + index,
+              "security" => security,
+              "balance" => balance
+            }
+            values_to_return["inputs"].push(new_input)
+          end
+
+          return values_to_return
+        end
       end
 
       # TODO: write
