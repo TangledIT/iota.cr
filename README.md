@@ -1,10 +1,6 @@
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iotaledger/iota.lib.js/master/LICENSE)
-# IOTA Crystal Library (not official)
+# iota
 
-This is the unofficial Crystal library for the IOTA Core.
-
-It is based on the current version of the official Javascript and will
-follow the same release cycle and version.
+TODO: Write a description here
 
 ## Installation
 
@@ -12,14 +8,14 @@ Add this to your application's `shard.yml`:
 
 ```yaml
 dependencies:
-  iota.cr:
-    github: vvangemert/iota.cr
+  iota:
+    github: your-github-user/iota
 ```
 
 ## Usage
 
 ```crystal
-require "iota.cr"
+require "iota"
 ```
 
 TODO: Write usage instructions here
@@ -30,12 +26,12 @@ TODO: Write development instructions here
 
 ## Contributing
 
-1. Fork it ( https://github.com/vvangemert/iota.cr/fork )
-2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
+1. Fork it (<https://github.com/your-github-user/iota/fork>)
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
 
 ## Contributors
 
-- [vvangemert](https://github.com/vvangemert) vvangemert - creator, maintainer
+- [your-github-user](https://github.com/your-github-user) vvangemert - creator, maintainer

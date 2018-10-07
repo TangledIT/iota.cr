@@ -4,7 +4,7 @@ version: 0.1.0
 authors:
   - TangledIT <team@tangled.it>
 
-crystal: 0.25.1
+crystal: 0.26.1
 
 license: MIT
 
