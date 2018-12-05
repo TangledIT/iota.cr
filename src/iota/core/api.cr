@@ -1,4 +1,5 @@
 require "./api/*"
+require "./api/responses/*"
 
 module Iota
   class Core

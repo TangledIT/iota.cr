@@ -5,11 +5,9 @@ module Iota
     end
 
     def self.create_bundle(entries = [] of String)
-
     end
 
-    def self.add_entry(transactions = [] of String, entry  = "")
-
+    def self.add_entry(transactions = [] of String, entry = "")
     end
 
     def self.add_trytes(transactions = [] of String, fragments = [] of String, offset = 0)
