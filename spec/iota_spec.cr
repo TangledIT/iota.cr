@@ -5,6 +5,7 @@ describe Iota do
 
   it "works" do
     iota = Iota::Core.new({:provider => "https://nodes.tangled.it"})
-    result = iota.get_node_info
+
+    # p iota.get_transactions_to_approve(depth: 15)
   end
 end

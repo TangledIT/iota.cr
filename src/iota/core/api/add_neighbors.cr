@@ -1,13 +1,14 @@
 module Iota
   class Core
     module Api
-      module GetNodeInfo
-        def get_node_info
+      module AddNeighbors
+        def add_neighbors(uris : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_NODE_INFO,
+            command: IRICommand::ADD_NEIGHBORS, uris: uris,
           })
+
           if response.status_code == 200
-            {data: Responses::GetNodeInfo.from_json(response.body), response: response}
+            {data: Responses::AddNeighbors.from_json(response.body), response: response}
           else
             {data: Responses::ErrorResponse.from_json(response.body), response: response}
           end

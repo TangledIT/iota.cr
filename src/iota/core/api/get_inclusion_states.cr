@@ -1,13 +1,14 @@
 module Iota
   class Core
     module Api
-      module GetNodeInfo
-        def get_node_info
+      module GetInclusionStates
+        def get_inclusion_states(transactions : Array(String), tips : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_NODE_INFO,
+            command: IRICommand::GET_INCLUSION_STATES, transactions: transactions, tips: tips,
           })
+
           if response.status_code == 200
-            {data: Responses::GetNodeInfo.from_json(response.body), response: response}
+            {data: Responses::GetInclusionStates.from_json(response.body), response: response}
           else
             {data: Responses::ErrorResponse.from_json(response.body), response: response}
           end
