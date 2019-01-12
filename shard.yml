@@ -12,3 +12,8 @@ dependencies:
   sha3:
     github: OscarBarrett/crystal-sha3
     version: ~> 0.3
+
+development_dependencies:
+  webmock:
+    github: manastech/webmock.cr
+    branch: master
