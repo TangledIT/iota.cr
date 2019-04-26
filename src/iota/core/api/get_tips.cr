@@ -4,7 +4,7 @@ module Iota
       module GetTips
         def get_tips
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_TIPS,
+            command: IRICOMMAND::GET_TIPS,
           })
 
           if response.status_code == 200

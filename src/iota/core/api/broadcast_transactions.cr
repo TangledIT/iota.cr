@@ -4,7 +4,7 @@ module Iota
       module BroadcastTransactions
         def broadcast_transactions(trytes : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::BROADCAST_TRANSACTIONS, trytes: trytes,
+            command: IRICOMMAND::BROADCAST_TRANSACTIONS, trytes: trytes,
           })
 
           if response.status_code == 200

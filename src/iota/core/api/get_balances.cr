@@ -4,7 +4,7 @@ module Iota
       module GetBalances
         def get_balances(addresses : Array(String), threshold : Int32, tips = [] of String)
           data = {} of Symbol => Array(String) | String | Int32
-          data[:command] = IRICommand::GET_BALANCES
+          data[:command] = IRICOMMAND::GET_BALANCES
           data[:addresses] = addresses
           data[:threshold] = threshold || 100
           data[:tips] = tips unless tips.size == 0

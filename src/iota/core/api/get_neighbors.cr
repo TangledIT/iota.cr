@@ -4,7 +4,7 @@ module Iota
       module GetNeighbors
         def get_neighbors
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_NEIGHBORS,
+            command: IRICOMMAND::GET_NEIGHBORS,
           })
 
           if response.status_code == 200

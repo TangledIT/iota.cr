@@ -4,7 +4,7 @@ module Iota
       module GetInclusionStates
         def get_inclusion_states(transactions : Array(String), tips : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_INCLUSION_STATES, transactions: transactions, tips: tips,
+            command: IRICOMMAND::GET_INCLUSION_STATES, transactions: transactions, tips: tips,
           })
 
           if response.status_code == 200

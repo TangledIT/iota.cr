@@ -7,7 +7,7 @@ module Iota
                              min_weight_magnitude : Int32,
                              trytes : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::ATTACH_TO_TANGLE,
+            command: IRICOMMAND::ATTACH_TO_TANGLE,
             trunkTransaction: trunk_transaction, branchTransaction: branch_transaction,
             minWeightMagnitude: min_weight_magnitude, trytes: trytes,
           })

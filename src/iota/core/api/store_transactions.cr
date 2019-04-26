@@ -4,7 +4,7 @@ module Iota
       module StoreTransactions
         def store_transactions(trytes : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::STORE_TRANSACTIONS, trytes: trytes,
+            command: IRICOMMAND::STORE_TRANSACTIONS, trytes: trytes,
           })
 
           if response.status_code == 200

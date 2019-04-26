@@ -11,7 +11,7 @@ module Iota
           data[:tags] = tags if tags.size > 0
           data[:bundles] = bundles if bundles.size > 0
           data[:approvees] = approvees if approvees.size > 0
-          data[:command] = IRICommand::FIND_TRANSACTIONS
+          data[:command] = IRICOMMAND::FIND_TRANSACTIONS
 
           response = HttpClient.send_command(settings.provider, settings.api_version, data)
 

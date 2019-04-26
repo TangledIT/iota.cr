@@ -4,7 +4,7 @@ module Iota
       module GetTransactionsToApprove
         def get_transactions_to_approve(depth : Int32, reference = "")
           data = {} of Symbol => String | Int32
-          data[:command] = IRICommand::GET_TRANSACTIONS_TO_APPROVE
+          data[:command] = IRICOMMAND::GET_TRANSACTIONS_TO_APPROVE
           data[:depth] = depth
           data[:reference] = reference unless reference.empty?
 

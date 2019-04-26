@@ -4,7 +4,7 @@ module Iota
       module InterruptAttachingToTangle
         def interrupt_attaching_to_tangle
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::INTERRUPT_ATTACHING_TO_TANGLE,
+            command: IRICOMMAND::INTERRUPT_ATTACHING_TO_TANGLE,
           })
 
           if response.status_code == 200

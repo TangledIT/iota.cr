@@ -4,7 +4,7 @@ module Iota
       module GetTrytes
         def get_trytes(hashes : Array(String))
           response = HttpClient.send_command(settings.provider, settings.api_version, {
-            command: IRICommand::GET_TRYTES, hashes: hashes,
+            command: IRICOMMAND::GET_TRYTES, hashes: hashes,
           })
 
           if response.status_code == 200
